@@ -1,8 +1,7 @@
 #include <stdio.h>
 
 int main() {
-    int n, m;
-    int x;
+    int n, m, x;
     
     printf("Enter the number of rows (n): ");
     scanf("%d", &n);
@@ -25,39 +24,50 @@ int main() {
     }
 
     while (x >= 0) {
-        printf("Number of people in the group: ");
+        printf("Enter number of people in the group: ");
         scanf("%d", &x);
         if (x < 0) {
             break;
         }
         
-        printf("X=%d \n", x);
-        
         int seek_row = 0;
         int last_zero_id = -1;
         
-        for (int j = m - 1; j >= 0; j--) {
-            if (arr[seek_row][j] == 0) {
-                last_zero_id = j;
+        while (seek_row < n) {
+            for (int j = m - 1; j >= 0; j--) {
+                if (arr[seek_row][j] == 0) {
+                    last_zero_id = j;
+                    break;
+                }
+            }
+            
+            if (x > last_zero_id + 1) {
+                seek_row++;
+                if (seek_row == n) {
+                    printf("Not enough space in the movie theater\n");
+                    printf("Exiting the program...\n");
+                    exit(0);
+                }
+            } 
+            else {
+                int count = 0;
+                for (int j = last_zero_id; j >= 0 && count < x; j--) {
+                    arr[seek_row][j] = 1;
+                    count++;
+                }
+    
+                printf("X=%d \n", x);
+                for (int i = 0; i < n; i++) {
+                    for (int j = 0; j < m; j++) {
+                        printf("%d ", arr[i][j]);
+                    }
+                    printf("\n");
+                }
+                
                 break;
             }
         }
-        
-        int count = 0;
-        for (int j = last_zero_id; j >= 0 && count < x; j--) {
-            arr[seek_row][j] = 1;
-            count++;
-        }
-        
-        printf("Updated array:\n");
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                printf("%d ", arr[i][j]);
-            }
-            printf("\n");
-        }
-        
     }
-
+    
     return 0;
 }
