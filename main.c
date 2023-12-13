@@ -1,4 +1,15 @@
 #include <stdio.h>
+#include <stdlib.h>
+
+void printArray(int *arr, int n, int m) {
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            printf("%d", *((arr+i*m) + j));
+            if (j < m-1) {printf("_");}
+        }
+        printf("\n");
+    }
+}
 
 int main() {
     int n, m, x;
@@ -15,13 +26,9 @@ int main() {
             arr[i][j] = 0;
         }
     }
+    
     printf("Start up:\n");
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
-            printf("%d ", arr[i][j]);
-        }
-        printf("\n");
-    }
+    printArray((int *)arr, n, m);
 
     while (x >= 0) {
         printf("Enter number of people (Negative num to exit): ");
@@ -61,12 +68,7 @@ int main() {
                 }
     
                 printf("X=%d \n", x);
-                for (int i = 0; i < n; i++) {
-                    for (int j = 0; j < m; j++) {
-                        printf("%d ", arr[i][j]);
-                    }
-                    printf("\n");
-                }
+                printArray((int *)arr, n, m);
                 
                 printf("Seats:");
                 for (int i = 0; i < x; i++) {
