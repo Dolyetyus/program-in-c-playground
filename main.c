@@ -15,7 +15,7 @@ int main() {
             arr[i][j] = 0;
         }
     }
-    printf("Start up:\n", n, m);
+    printf("Start up:\n");
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
             printf("%d ", arr[i][j]);
@@ -24,14 +24,16 @@ int main() {
     }
 
     while (x >= 0) {
-        printf("Enter number of people in the group: ");
+        printf("Enter number of people (Negative num to exit): ");
         scanf("%d", &x);
         if (x < 0) {
+            printf("Exiting the program...\n");
             break;
         }
         
         int seek_row = 0;
         int last_zero_id = -1;
+        int recent_updates[x][2];
         
         while (seek_row < n) {
             for (int j = m - 1; j >= 0; j--) {
@@ -53,6 +55,8 @@ int main() {
                 int count = 0;
                 for (int j = last_zero_id; j >= 0 && count < x; j--) {
                     arr[seek_row][j] = 1;
+                    recent_updates[count][0] = seek_row;
+                    recent_updates[count][1] = j;
                     count++;
                 }
     
@@ -63,6 +67,17 @@ int main() {
                     }
                     printf("\n");
                 }
+                
+                printf("Seats:");
+                for (int i = 0; i < x; i++) {
+                    int row = recent_updates[i][0];
+                    int col = m - 1 - recent_updates[i][1];
+                    char label = 'A' + row;
+                    
+                    printf("%c%d", label, col + 1);
+                    if (i < x-1) {printf(",");}
+                }
+                printf("\n");
                 
                 break;
             }
