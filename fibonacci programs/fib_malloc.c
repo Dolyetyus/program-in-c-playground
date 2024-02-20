@@ -2,27 +2,27 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-uint64_t* my_fib(uint64_t i, uint64_t **arr, uint64_t *size) {
-    if (i < *size) {
-        return *arr;
+uint64_t* my_fib(uint64_t i, uint64_t *arr, uint64_t size) {
+    if (i < size) {
+        return arr;
     }
 
-    uint64_t *new_arr = realloc(*arr, (i + 1) * sizeof(uint64_t));
+    uint64_t *new_arr = realloc(arr, (i + 1) * sizeof(uint64_t));
 
-    *arr = new_arr;
-
-    if (*size == 0) {
+    if (size == 0) {
         new_arr[0] = 0;
-        new_arr[1] = 1;
-        *size = 2;
+        size = 1;
     }
 
-    for (uint64_t idx = *size; idx <= i; ++idx) {
+    if (size == 1) {
+        new_arr[1] = 1;
+        size = 2;
+    }
+
+    for (uint64_t idx = size; idx <= i; ++idx) {
         new_arr[idx] = new_arr[idx - 1] + new_arr[idx - 2];
     }
 
-    *size = i + 1;
-    
     return new_arr;
 }
 
@@ -38,9 +38,12 @@ int main() {
             break;
         }
 
-        uint64_t *fib_arr = my_fib(i, &arr, &size);
+        uint64_t *temp = my_fib(i, arr, size);
+        
+        arr = temp;
+        size = i + 1;
 
-        printf("F_%lu = %lu\n", i, fib_arr[i]);
+        printf("F_%lu = %lu\n", i, arr[i]);
     }
 
     free(arr);
