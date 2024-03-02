@@ -9,12 +9,8 @@ uint64_t* my_fib(uint64_t i, uint64_t *arr, uint64_t size) {
 
     uint64_t *new_arr = realloc(arr, (i + 1) * sizeof(uint64_t));
 
-    if (size == 0) {
+    if (size < 2) {
         new_arr[0] = 0;
-        size = 1;
-    }
-
-    if (size == 1) {
         new_arr[1] = 1;
         size = 2;
     }
