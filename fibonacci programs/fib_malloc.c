@@ -23,10 +23,12 @@ uint64_t* my_fib(uint64_t i, uint64_t *arr, uint64_t size) {
 }
 
 int main() {
-    uint64_t *arr = NULL;
-    uint64_t size = 0;
+    uint64_t size = 2;
+    uint64_t *arr = arr = (uint64_t*)malloc(size * sizeof(uint64_t));
+    arr[0] = 0;
+    arr[1] = 1;
+    
     uint64_t i;
-
     while (1) {
         printf("Enter an index: ");
         if (scanf("%lu", &i) != 1) {
