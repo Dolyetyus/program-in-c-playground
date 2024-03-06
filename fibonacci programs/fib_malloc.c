@@ -14,7 +14,7 @@ uint64_t* my_fib(uint64_t i, uint64_t *arr, uint64_t size) {
         new_arr[1] = 1;
         size = 2;
     }
-
+    
     for (uint64_t idx = size; idx <= i; ++idx) {
         new_arr[idx] = new_arr[idx - 1] + new_arr[idx - 2];
     }
@@ -38,8 +38,10 @@ int main() {
 
         uint64_t *temp = my_fib(i, arr, size);
         
-        arr = temp;
-        size = i + 1;
+        if (i >= size) {
+            arr = temp;
+            size = i + 1;
+        }
 
         printf("F_%lu = %lu\n", i, arr[i]);
     }
