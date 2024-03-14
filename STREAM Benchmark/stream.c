@@ -3,9 +3,15 @@
 #include <time.h>
 #include <float.h>
 
-#define ARRAY_SIZE 7500000
 #define SCALAR 3.0
-#define NUM_TRIALS 20
+
+#ifndef ARRAY_SIZE
+    #define ARRAY_SIZE 75000000
+#endif
+
+#ifndef NUM_TRIALS
+    #define NUM_TRIALS 20
+#endif
 
 void init_arrays(double *a, double *b, double *c) {
     for (long i = 0; i < ARRAY_SIZE; i++) {
