@@ -2,15 +2,15 @@
 #include <time.h>
 
 int main() {
-    int num1 = 10, num2 = 5;
-    int add, subtract, multiply;
+    long num1 = 10, num2 = 5;
+    long add, subtract, multiply;
     float divide;
 
     time_t start, end;
     double cpu_time_used;
 
     start = clock();
-    for (int i = 0; i < 1000000000; i++){
+    for (long i = 0; i < 1000000000; i++){
         add = num1 + num2;
         subtract = num1 - num2;
         multiply = num1 * num2;
