@@ -4,4 +4,4 @@ Both programs are run on the same cloud computer, where each of the four basic a
 
 Both programs are executed 10 times, where the average computation speed for the Assembly program was ***2.715606*** seconds and for the C program it was ***3.907587***.
 
-The result shows us that Assembly language is **1.44** times faster for basic calculations compared to C.
+The result shows us that Assembly language is **1.44** times faster for basic calculations compared to C on the cloud computer I used.
