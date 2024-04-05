@@ -13,12 +13,13 @@ int partition(int arr[], int low, int high) {
             arr[j] = temp;
         }
     }
-
-    int temp = arr[i + 1];
-    arr[i + 1] = arr[high];
+    
+    i++;
+    int temp = arr[i];
+    arr[i] = arr[high];
     arr[high] = temp;
 
-    return i + 1;
+    return i;
 }
 
 void quickSort(int arr[], int low, int high) {
