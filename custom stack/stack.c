@@ -12,6 +12,7 @@ void push(){
     if (top == size - 1){
         size += MAX_SIZE;
         stack = realloc(stack, size * sizeof(int));
+        printf("Memory expand\n");
         if(stack == NULL){
             printf("Memory allocation failed\n");
             exit(1);
@@ -35,8 +36,19 @@ void pop(){
         printf("Popped element: %d\n", temp);
         top = top - 1;
         sum -= temp;
+
+        if ((top >= 0) && (top < size - MAX_SIZE)) {
+            size -= MAX_SIZE;
+            stack = realloc(stack, size * sizeof(int));
+            printf("Memory shrink\n");
+            if(stack == NULL){
+                printf("Memory allocation failed\n");
+                exit(1);
+            }
+        }
     }
 }
+
 
 void peek(){
     printf("Top element on the stack: %d\n", stack[top]);
