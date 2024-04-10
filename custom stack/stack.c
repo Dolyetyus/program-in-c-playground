@@ -1,24 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_SIZE 32
+#define MAX_SIZE 8
 
 int top = -1;
-int stack[MAX_SIZE];
+int *stack = NULL;
 int sum = 0;
+int size = MAX_SIZE;
 
 void push(){
-    if (top == MAX_SIZE - 1){
-        printf("Stack overflow\n");
+    if (top == size - 1){
+        size += MAX_SIZE;
+        stack = realloc(stack, size * sizeof(int));
+        if(stack == NULL){
+            printf("Memory allocation failed\n");
+            exit(1);
+        }
     }
-    else{
-        int x;
-        printf("Enter the element to add onto the stack: ");
-        scanf("%d", &x);
-        top = top + 1;
-        stack[top] = x;
-        sum += x;
-    }
+    
+    int x;
+    printf("Enter the element to add onto the stack: ");
+    scanf("%d", &x);
+    top = top + 1;
+    stack[top] = x;
+    sum += x;
 }
 
 void pop(){
@@ -59,6 +64,8 @@ void display(){
 int main(){
     int choice;
     
+    stack = malloc(size * sizeof(int));
+    
     printf("How to use the stack:");
     printf("\n1-Push\n2-Pop\n3-Peek\n4-Total\n5-Is Empty?\n6-Display\n0-Exit\n");
     
@@ -75,4 +82,7 @@ int main(){
         else if (choice == 0)   return 0;
         else                    printf("\nInvalid choice");
     }
+    
+    free(stack);
+    return 0;
 }
