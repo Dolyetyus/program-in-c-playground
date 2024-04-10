@@ -1,6 +1,6 @@
 This is my custom stack implementation which I will use later in some projects probably.
 
-The stack has an initial size of 8 integers. However, if more elements are added, the stack size dynamically expands as needed. So, stack overflow is impossible unless the computer runs out of resources.
+The stack has an initial size of 8 integers. However, if more elements are added, the stack size dynamically expands and shrinks as needed. So, stack overflow is impossible unless the computer runs out of resources.
 
 __Operations:__
 * Push: Pushes an element unto the stack. Time complexity: O(1)
