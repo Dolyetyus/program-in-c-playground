@@ -106,8 +106,10 @@ void singleplayer() {
             game_over = true;
         }
 
-        if (game_over)
-            break;
+        if (game_over) break;
+        
+        display_grid();
+        printf("Bot's turn.\n");
 
         if (elements[4] == ' '){
             cell = 4;
