@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
+#include <stdlib.h>
+#include <time.h>
 
 char* grid = " %c | %c | %c \n-----------\n %c | %c | %c \n-----------\n %c | %c | %c \n";
 
@@ -7,8 +9,10 @@ char elements[] = {' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '};
 
 void display_grid() {
     printf("\033[2J\033[1;1H");
+    printf("Grid numeration:\n 1 | 2 | 3 \n-----------\n 4 | 5 | 6 \n-----------\n 7 | 8 | 9 \n\n");
     printf(grid, elements[0], elements[1], elements[2], elements[3], elements[4], elements[5], elements[6], elements[7], elements[8]);
 }
+
 
 bool check_win(char player) {
     for (int i = 0; i < 3; i++) {
@@ -40,7 +44,7 @@ void clear_board() {
     }
 }
 
-void game() {
+void multiplayer() {
     char current_player = 'X';
     int cell;
     bool game_over = false;
@@ -72,6 +76,64 @@ void game() {
     }
 }
 
+void singleplayer() {
+    char human_player = 'X', bot_player = 'O';
+
+    int cell;
+    bool game_over = false;
+
+    while (!game_over) {
+        display_grid();
+        
+        printf("Your turn. Enter cell number (1-9): ");
+        scanf("%d", &cell);
+        cell--;
+
+        if (cell < 0 || cell >= 9 || elements[cell] != ' ') {
+            continue;
+        }
+
+        elements[cell] = human_player;
+
+        if (check_win(human_player)) {
+            display_grid();
+            printf("Congratulations! You won!\n");
+            game_over = true;
+        } 
+        else if (check_draw()) {
+            display_grid();
+            printf("It's a draw!\n");
+            game_over = true;
+        }
+
+        if (game_over)
+            break;
+
+        if (elements[4] == ' '){
+            cell = 4;
+        }
+        else{
+            do {
+                srand(time(NULL));
+                cell = rand() % 9;
+            } while (elements[cell] != ' ');
+        }
+
+        elements[cell] = bot_player;
+
+        if (check_win(bot_player)) {
+            display_grid();
+            printf("You lost. Loser lol!\n");
+            game_over = true;
+        } 
+        else if (check_draw()) {
+            display_grid();
+            printf("It's a draw!\n");
+            game_over = true;
+        }
+    }
+}
+
 int main() {
     int user_choice;
     bool replay = true;
@@ -79,19 +141,23 @@ int main() {
     printf("WELCOME TO TIC TAC TOE");
     
     while (replay) {
-        printf("\n1- Start game\n0- Exit the game\n");
+        printf("\n1- Play turn based multiplayer\n2- Play against bot\n0- Exit the game\n");
         scanf("%d", &user_choice);
 
         if (user_choice == 1) {
             clear_board();
-            game();
+            multiplayer();
+        }
+        else if (user_choice == 2) {
+            clear_board();
+            singleplayer();
         } 
         else if (user_choice == 0) {
             printf("Exiting the game.\n");
             replay = false;
         } 
         else {
-            printf("Invalid choice. Please enter 1 to start the game or 0 to exit.\n");
+            printf("Invalid choice. Please enter 1 or 2 to start the game or 0 to exit.\n");
         }
     }
 
