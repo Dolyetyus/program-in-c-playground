@@ -13,7 +13,6 @@ void display_grid() {
     printf(grid, elements[0], elements[1], elements[2], elements[3], elements[4], elements[5], elements[6], elements[7], elements[8]);
 }
 
-
 bool check_win(char player) {
     for (int i = 0; i < 3; i++) {
         if (elements[i * 3] == player && elements[i * 3 + 1] == player && elements[i * 3 + 2] == player)
@@ -123,14 +122,16 @@ void singleplayer() {
             }
         }
 
-        if (elements[4] == ' '){
-            cell = 4;
-        }
-        else{
-            do {
-                srand(time(NULL));
-                cell = rand() % 9;
-            } while (elements[cell] != ' ');
+        if (!game_over) {
+            if (elements[4] == ' '){
+                cell = 4;
+            }
+            else{
+                do {
+                    srand(time(NULL));
+                    cell = rand() % 9;
+                } while (elements[cell] != ' ');
+            }
         }
 
         elements[cell] = bot_player;
@@ -169,7 +170,7 @@ int main() {
         else if (user_choice == 0) {
             printf("Exiting the game.\n");
             replay = false;
-        } 
+        }
         else {
             printf("Invalid choice. Please enter 1 or 2 to start the game or 0 to exit.\n");
         }
