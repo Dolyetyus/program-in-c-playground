@@ -24,6 +24,35 @@ void *receive_messages(void *socket_fd) {
     return NULL;
 }
 
+void register_username(int conn_fd) {
+    char buffer[BUFFER_SIZE];
+    char username[BUFFER_SIZE];
+    int is_welcome_received = 0;
+
+    while (!is_welcome_received) {
+        memset(buffer, 0, BUFFER_SIZE);
+        int bytes_received = recv(conn_fd, buffer, sizeof(buffer) - 1, 0);
+        if (bytes_received <= 0) {
+            printf("Disconnected from server.\n");
+            close(conn_fd);
+            exit(EXIT_FAILURE);
+        }
+        printf("%s", buffer);
+
+        // Check if the server sent a "Welcome" message
+        if (strncmp(buffer, "Welcome", 7) == 0) {
+            is_welcome_received = 1;
+            break;
+        }
+
+        printf("Enter username: ");
+        fgets(username, BUFFER_SIZE, stdin);
+        if (username[0] == '\0') continue;  // Skip if user presses enter right away
+        username[strcspn(username, "\n")] = '\0';
+        send(conn_fd, username, strlen(username), 0);
+    }
+}
+
 int main() {
     int conn_fd = socket(AF_INET, SOCK_STREAM, 0);
     if (conn_fd < 0) {
@@ -49,39 +78,26 @@ int main() {
 
     printf("Connected to server.\n");
 
-    // Receive the initial prompt for username
-    char buffer[BUFFER_SIZE];
-    memset(buffer, 0, BUFFER_SIZE);
-    int bytes_received = recv(conn_fd, buffer, sizeof(buffer) - 1, 0);
-    if (bytes_received <= 0) {
-        printf("Disconnected from server.\n");
-        close(conn_fd);
-        exit(EXIT_FAILURE);
-    }
-    printf("%s", buffer);
-
-    // Send username
-    char username[BUFFER_SIZE];
-    fgets(username, BUFFER_SIZE, stdin);
-    username[strcspn(username, "\n")] = '\0';
-    send(conn_fd, username, strlen(username), 0);
+    register_username(conn_fd);
 
     // Create a thread to receive messages
     pthread_t recv_thread;
     pthread_create(&recv_thread, NULL, receive_messages, &conn_fd);
     pthread_detach(recv_thread);
 
+    char buffer[BUFFER_SIZE];
     while (1) {
         memset(buffer, 0, BUFFER_SIZE);
-        char* res = fgets(buffer, BUFFER_SIZE, stdin);
+        char *res = fgets(buffer, BUFFER_SIZE, stdin);
 
-        if (res[0]=='\0') res[0] = '\0'; // to handle the compiler warning
+        if (res[0] == '\0') res[0] = '\0'; // Handle compiler warning
 
         if (strncmp(buffer, "exit", 4) == 0) {
             printf("Exiting...\n");
             break;
         }
 
+        buffer[strcspn(buffer, "\n")] = '\0';  // Remove newline
         send(conn_fd, buffer, strlen(buffer), 0);
     }
 

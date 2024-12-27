@@ -131,6 +131,7 @@ void broadcast_message(const char *message, int sender_id) {
 
 int is_valid_username(const char *username) {
     size_t len = strlen(username);
+    printf("Raw username: '%s'\n", username);
     if (len < USERNAME_MIN || len > USERNAME_MAX) { // max check might be unnecessary
         return 0;
     }
