@@ -2,9 +2,11 @@
 # make to compile the server.
 # make run to compile and execute the server.
 # make clean to remove the compiled files.
+# make debug to compile with debugging information and run with gdb.
 
 CC = gcc
 CFLAGS = -Wall -Wextra -O2
+DEBUG_FLAGS = -g
 TARGET = server
 
 all: $(TARGET)
@@ -20,3 +22,7 @@ run: $(TARGET)
 
 clean:
 	rm -f $(TARGET) server.o
+
+debug: CFLAGS += $(DEBUG_FLAGS)
+debug: $(TARGET)
+	gdb ./$(TARGET)

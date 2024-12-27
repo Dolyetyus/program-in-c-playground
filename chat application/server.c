@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <ctype.h>
+#include <bits/pthreadtypes.h>
 
 #define MAX_SIZE 64
 #define USERNAME_MIN 3
@@ -45,7 +46,7 @@ void cleanup_client(int user_id) {
     pthread_rwlock_unlock(&client_rwlock);
 }
 
-void *client_handler(void *arg) {
+void *client_handler(void *arg) {       // This part crashes now, related to threads and the "thread pool". Just create threads for every client for now. I'll deal with this later
     int conn_fd = *(int *)arg;
     free(arg);
 
