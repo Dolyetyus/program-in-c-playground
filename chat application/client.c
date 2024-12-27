@@ -7,7 +7,7 @@
 #include <signal.h>
 
 #define ADDRESS "127.0.0.1"
-#define PORT 3132
+#define PORT 3162
 #define BUFFER_SIZE 256
 
 // Mutex for controlling terminal output
@@ -67,8 +67,23 @@ void register_username(int conn_fd) {
             break;
         }
 
+        if (strncmp(buffer, "Server", 6) == 0) {
+            printf("Exiting...\n");
+            close(conn_fd);
+            return;
+        }
+
         fgets(username, BUFFER_SIZE, stdin);
-        if (username[0] == '\0') continue;  // Skip if user presses enter right away
+
+        if (strncmp(username, "exit", 4) == 0) {
+            pthread_mutex_lock(&output_mutex);
+            clear_line();
+            printf("Exiting username registration.\n");
+            pthread_mutex_unlock(&output_mutex);
+            close(conn_fd);
+            exit(EXIT_SUCCESS);
+        }
+
         username[strcspn(username, "\n")] = '\0';
         send(conn_fd, username, strlen(username), 0);
     }

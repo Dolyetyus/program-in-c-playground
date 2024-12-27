@@ -10,7 +10,7 @@
 #define MAX_SIZE 64
 #define USERNAME_MIN 3
 #define USERNAME_MAX 16
-#define PORT 3132
+#define PORT 3162
 #define BUFFER_SIZE 256
 
 typedef struct {
@@ -51,7 +51,17 @@ void *client_handler(void *arg) {
     while (1) {
         send(conn_fd, "Enter username: ", 17, 0);
         memset(username, 0, sizeof(username));
-        recv(conn_fd, username, sizeof(username) - 1, 0);
+        int bytes_received = recv(conn_fd, username, sizeof(username) - 1, 0);
+
+        if (bytes_received <= 0) {      // If the user exits during registration
+            return NULL;
+            break;
+        }
+
+        if (username[0] == '\0') {
+            send(conn_fd, "Username cannot be empty. Try again.\n", 38, 0);
+            continue;
+        }
 
         if (!is_valid_username(username)) {
             send(conn_fd, "Invalid username. Must be 3-16 characters, only letters, numbers, and _.\n", 73, 0);
@@ -68,7 +78,7 @@ void *client_handler(void *arg) {
         }
         pthread_rwlock_unlock(&client_rwlock);
 
-        if (exists) send(conn_fd, "Username already exists. Try again.\n", 37, 0);
+        if (exists) send(conn_fd, "Username already exists. Try again.\n", 36, 0);
         else break;
     }
 
@@ -87,7 +97,7 @@ void *client_handler(void *arg) {
     pthread_rwlock_unlock(&client_rwlock);
 
     if (user_id == -1) {
-        send(conn_fd, "Server is full. Disconnecting.\n", 31, 0);
+        send(conn_fd, "Server is full. Try again later. Disconnecting.\n", 48, 0);
         close(conn_fd);
         return NULL;
     }
