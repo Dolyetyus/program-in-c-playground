@@ -29,13 +29,6 @@ void *client_handler(void *arg);
 void broadcast_message(const char *message, int sender_id);
 int is_valid_username(const char *username);
 
-void initialize_thread_pool() {
-    thread_pool = malloc(threadpool_size * sizeof(pthread_t));
-    for (int i = 0; i < threadpool_size; i++) {
-        pthread_create(&thread_pool[i], NULL, client_handler, NULL);
-    }
-}
-
 void cleanup_client(int user_id) {
     pthread_rwlock_wrlock(&client_rwlock);
     if (active_clients[user_id]) {
@@ -46,7 +39,7 @@ void cleanup_client(int user_id) {
     pthread_rwlock_unlock(&client_rwlock);
 }
 
-void *client_handler(void *arg) {       // This part crashes now, related to threads and the "thread pool". Just create threads for every client for now. I'll deal with this later
+void *client_handler(void *arg) {
     int conn_fd = *(int *)arg;
     free(arg);
 
@@ -61,7 +54,7 @@ void *client_handler(void *arg) {       // This part crashes now, related to thr
         recv(conn_fd, username, sizeof(username) - 1, 0);
 
         if (!is_valid_username(username)) {
-            send(conn_fd, "Invalid username. Must be 3-16 characters, only letters, numbers, and _.\n", 70, 0);
+            send(conn_fd, "Invalid username. Must be 3-16 characters, only letters, numbers, and _.\n", 73, 0);
             continue;
         }
 
@@ -175,8 +168,6 @@ int main() {
 
     printf("Server started on port %d\n", PORT);
 
-    initialize_thread_pool();
-
     while (1) {
         struct sockaddr_in client_addr;
         socklen_t client_len = sizeof(client_addr);
@@ -188,6 +179,8 @@ int main() {
             free(conn_fd);
             continue;
         }
+
+        printf("Client connected %d\n", *conn_fd);
 
         pthread_t client_thread;
         pthread_create(&client_thread, NULL, client_handler, conn_fd);
