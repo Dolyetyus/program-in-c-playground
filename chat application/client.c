@@ -4,10 +4,24 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <pthread.h>
+#include <signal.h>
 
 #define ADDRESS "127.0.0.1"
-#define PORT 3131
+#define PORT 3132
 #define BUFFER_SIZE 256
+
+// Mutex for controlling terminal output
+pthread_mutex_t output_mutex = PTHREAD_MUTEX_INITIALIZER;
+
+void clear_line() {
+    printf("\33[2K\r"); // Clear the current line and move the cursor to the start
+    fflush(stdout);
+}
+
+void display_prompt() {
+    printf("You: ");
+    fflush(stdout);
+}
 
 void *receive_messages(void *socket_fd) {
     int conn_fd = *(int *)socket_fd;
@@ -16,10 +30,18 @@ void *receive_messages(void *socket_fd) {
         memset(buffer, 0, BUFFER_SIZE);
         int bytes_received = recv(conn_fd, buffer, sizeof(buffer) - 1, 0);
         if (bytes_received <= 0) {
+            pthread_mutex_lock(&output_mutex);
+            clear_line();
             printf("Disconnected from server.\n");
+            pthread_mutex_unlock(&output_mutex);
             exit(EXIT_FAILURE);
         }
-        printf("%s", buffer);
+
+        pthread_mutex_lock(&output_mutex);
+        clear_line();
+        printf("%s\n", buffer); // Display received message
+        display_prompt();       // Restore prompt
+        pthread_mutex_unlock(&output_mutex);
     }
     return NULL;
 }
@@ -45,7 +67,6 @@ void register_username(int conn_fd) {
             break;
         }
 
-        printf("Enter username: ");
         fgets(username, BUFFER_SIZE, stdin);
         if (username[0] == '\0') continue;  // Skip if user presses enter right away
         username[strcspn(username, "\n")] = '\0';
@@ -87,17 +108,25 @@ int main() {
 
     char buffer[BUFFER_SIZE];
     while (1) {
+        pthread_mutex_lock(&output_mutex);
+        display_prompt();
+        pthread_mutex_unlock(&output_mutex);
+
         memset(buffer, 0, BUFFER_SIZE);
         char *res = fgets(buffer, BUFFER_SIZE, stdin);
 
-        if (res[0] == '\0') res[0] = '\0'; // Handle compiler warning
+        if (res == NULL || res[0] == '\0') continue; // Handle empty input
+
+        buffer[strcspn(buffer, "\n")] = '\0';  // Remove newline
 
         if (strncmp(buffer, "exit", 4) == 0) {
+            pthread_mutex_lock(&output_mutex);
+            clear_line();
             printf("Exiting...\n");
+            pthread_mutex_unlock(&output_mutex);
             break;
         }
 
-        buffer[strcspn(buffer, "\n")] = '\0';  // Remove newline
         send(conn_fd, buffer, strlen(buffer), 0);
     }
 

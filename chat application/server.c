@@ -10,7 +10,7 @@
 #define MAX_SIZE 64
 #define USERNAME_MIN 3
 #define USERNAME_MAX 16
-#define PORT 3131
+#define PORT 3132
 #define BUFFER_SIZE 256
 
 typedef struct {
@@ -92,7 +92,7 @@ void *client_handler(void *arg) {
         return NULL;
     }
 
-    snprintf(buffer, sizeof(buffer), "Welcome %s!\n", username);
+    snprintf(buffer, sizeof(buffer), "Welcome %s!\n\n", username);
     send(conn_fd, buffer, strlen(buffer), 0);
 
     // Main communication loop
@@ -104,12 +104,7 @@ void *client_handler(void *arg) {
             break;
         }
 
-        if (strncmp(buffer, "MSG", 3) == 0) {
-            broadcast_message(buffer + 4, user_id);
-        } 
-        else {
-            send(conn_fd, "Invalid command. Use MSG <message>.\n", 36, 0);
-        }
+        broadcast_message(buffer, user_id);
     }
 
     cleanup_client(user_id);
@@ -119,10 +114,10 @@ void *client_handler(void *arg) {
 void broadcast_message(const char *message, int sender_id) {
     pthread_rwlock_rdlock(&client_rwlock);
     char buffer[BUFFER_SIZE];
-    snprintf(buffer, sizeof(buffer), "%s: %s\n", active_clients[sender_id]->username, message);
+    snprintf(buffer, sizeof(buffer), "%s: %s", active_clients[sender_id]->username, message);
 
     for (int i = 0; i < MAX_SIZE; i++) {
-        if (active_clients[i] /* && i != sender_id */) {
+        if (active_clients[i]  && i != sender_id) {
             send(active_clients[i]->conn_fd, buffer, strlen(buffer), 0);
         }
     }
