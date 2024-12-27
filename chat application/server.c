@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <ctype.h>
 
 #define MAX_SIZE 64
 #define USERNAME_MIN 3
@@ -82,7 +83,7 @@ void *client_handler(void *arg) {
     for (int i = 0; i < MAX_SIZE; i++) {
         if (!active_clients[i]) {
             active_clients[i] = malloc(sizeof(Client));
-            strncpy(active_clients[i]->username, username, USERNAME_MAX);
+            strncpy(active_clients[i]->username, username, USERNAME_MAX+1);
             active_clients[i]->conn_fd = conn_fd;
             active_clients[i]->user_id = i;
             user_id = i;
